@@ -11,8 +11,15 @@
 
   :root {
     --blue-500: #0066FF;
+    --blue-600: #0052CC;
     --blue-100: #DEEAFF;
     --blue-50: #EEF4FF;
+    --green-500: #34C759;
+    --green-50: #E8F8ED;
+    --gold-500: #F0AD4E;
+    --gold-50: #FFF8E7;
+    --red-500: #E53935;
+    --red-100: #FFEBEE;
     --gray-50: #F7F7F8;
     --gray-100: #EFEFEF;
     --gray-200: #D9D9D9;
@@ -457,7 +464,7 @@
 
   <!-- GLOSSARY SCREEN -->
   <div class="screen-content">
-    <div id="screen-glossary" class="screen active">
+    <div id="screen-glossary" class="screen">
       <div class="screen-title">Glossary</div>
       <div style="display:flex;gap:8px;margin-bottom:24px;">
         <div class="search-bar" style="flex:1;margin-bottom:0;">
@@ -667,179 +674,172 @@
       </button>
     </div>
 
-    <!-- AI PREP SCREEN -->
+    <!-- HOME SCREEN -->
+    <div id="screen-home" class="screen active">
+      <div style="font-size:15px;color:var(--gray-500);font-weight:500;">Good morning,</div>
+      <div style="font-size:28px;font-weight:700;color:var(--gray-900);margin-bottom:16px;">Alex 👋</div>
+
+      <div style="background:linear-gradient(135deg, var(--blue-500), var(--blue-600));border-radius:20px;padding:20px;color:white;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,102,255,.2);">
+        <div style="font-size:13px;opacity:.85;font-weight:500;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Your Database</div>
+        <div style="font-size:42px;font-weight:700;line-height:1;margin-bottom:4px;">248</div>
+        <div style="font-size:14px;opacity:.9;">terms across 6 glossaries</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;">
+        <div style="background:var(--gray-50);border-radius:16px;padding:16px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--blue-50);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+          </div>
+          <div style="font-size:24px;font-weight:700;color:var(--gray-900);line-height:1;">6</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">Glossaries</div>
+        </div>
+        <div style="background:var(--gray-50);border-radius:16px;padding:16px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--green-50);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+          <div style="font-size:24px;font-weight:700;color:var(--gray-900);line-height:1;">+18</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">Added this week</div>
+        </div>
+        <div style="background:var(--gray-50);border-radius:16px;padding:16px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--gold-50);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F0AD4E" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div style="font-size:24px;font-weight:700;color:var(--gray-900);line-height:1;">12</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">Due for review</div>
+        </div>
+        <div style="background:var(--gray-50);border-radius:16px;padding:16px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:12px;background:var(--blue-50);display:flex;align-items:center;justify-content:center;margin-bottom:10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div style="font-size:24px;font-weight:700;color:var(--gray-900);line-height:1;">87%</div>
+          <div style="font-size:13px;color:var(--gray-500);margin-top:4px;">Accuracy</div>
+        </div>
+      </div>
+
+      <div class="section-header">Recent Activity</div>
+      <div class="list-row">
+        <div class="list-avatar" style="background:var(--blue-50);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+        </div>
+        <div class="list-text">
+          <div class="list-title">Generated Medical — Orthopedic</div>
+          <div class="list-subtitle">42 terms added via AI Prep</div>
+        </div>
+        <span class="list-meta">2h</span>
+      </div>
+      <div class="list-row">
+        <div class="list-avatar" style="background:var(--green-50);color:var(--green-500);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="list-text">
+          <div class="list-title">Added "Sutures" to Medical</div>
+          <div class="list-subtitle">Custom entry</div>
+        </div>
+        <span class="list-meta">5h</span>
+      </div>
+      <div class="list-row">
+        <div class="list-avatar" style="background:var(--gold-50);color:var(--gold-500);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="list-text">
+          <div class="list-title">Practice session: Medical</div>
+          <div class="list-subtitle">20 min · Interpretation roleplay</div>
+        </div>
+        <span class="list-meta">Yesterday</span>
+      </div>
+    </div>
+
+    <!-- AI PREP SCREEN - 2-section choice -->
     <div id="screen-aiprep" class="screen">
-      <div class="screen-title">AI Prep</div>
-      <div class="hero-card">
-        <div class="hero-card-icon">✨</div>
-        <div class="hero-card-title">Assignment Glossary Generator</div>
-        <div class="hero-card-desc">Paste your assignment brief and AI will generate a study glossary for you</div>
-      </div>
-      <div class="section-header">Recent Glossaries</div>
-      <div class="list-row">
-        <div class="list-avatar" style="background: var(--blue-50);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        </div>
-        <div class="list-text">
-          <div class="list-title">Medical Terminology</div>
-          <div class="list-subtitle">42 terms generated</div>
-        </div>
-        <span class="badge success">● Complete</span>
-        <span class="list-chevron">›</span>
-      </div>
-      <div class="list-row">
-        <div class="list-avatar" style="background: var(--blue-50);">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-        </div>
-        <div class="list-text">
-          <div class="list-title">Court Proceedings</div>
-          <div class="list-subtitle">28 terms generated</div>
-        </div>
-        <span class="badge info">↻ In review</span>
-        <span class="list-chevron">›</span>
-      </div>
-    </div>
-
-    <!-- STUDY SCREEN -->
-    <div id="screen-study" class="screen">
-      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-        <div class="screen-title" style="margin-bottom:0">Study</div>
-        <span class="badge success">● 12 due</span>
-      </div>
-      <div class="flashcard">
-        <div class="flashcard-lang">Spanish → English</div>
-        <div class="flashcard-term">Demandante</div>
-        <div class="flashcard-hint">Tap to reveal</div>
-      </div>
-      <div class="action-row">
-        <button class="action-btn">
-          <div class="action-btn-circle" style="border-color: #E53935;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <div class="screen-title" style="font-size:26px;line-height:32px;">How would you like to create your glossary?</div>
+      <div style="font-size:15px;color:var(--gray-500);margin-bottom:20px;">Pick an approach to start building terminology for your next interpretation assignment.</div>
+      <div class="choice-grid">
+        <div class="choice-block ai" onclick="showSubScreen('create-ai')">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
           </div>
-          <span class="action-btn-label">Again</span>
-        </button>
-        <button class="action-btn">
-          <div class="action-btn-circle" style="border-color: #F0AD4E;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F0AD4E" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg>
-          </div>
-          <span class="action-btn-label">Hard</span>
-        </button>
-        <button class="action-btn">
-          <div class="action-btn-circle" style="border-color: #34C759;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-          </div>
-          <span class="action-btn-label">Good</span>
-        </button>
-        <button class="action-btn">
-          <div class="action-btn-circle">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <span class="action-btn-label">Easy</span>
-        </button>
-      </div>
-      <div class="section-header">Today's Progress</div>
-      <div style="background: var(--gray-50); border-radius:16px; padding:16px; display:flex; justify-content:space-around; text-align:center;">
-        <div>
-          <div style="font-size:28px; font-weight:700; color:var(--blue-500);">8</div>
-          <div style="font-size:13px; color:var(--gray-500);">Reviewed</div>
+          <h3>AI Generate Glossary</h3>
+          <p>Describe your assignment and let AI build a terminology set. Optionally blend with your existing glossaries as a base.</p>
         </div>
-        <div>
-          <div style="font-size:28px; font-weight:700; color:var(--green-500);">6</div>
-          <div style="font-size:13px; color:var(--gray-500);">Correct</div>
-        </div>
-        <div>
-          <div style="font-size:28px; font-weight:700; color:var(--gray-900);">75%</div>
-          <div style="font-size:13px; color:var(--gray-500);">Accuracy</div>
+        <div class="choice-block custom" onclick="showSubScreen('create-custom')">
+          <div class="icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <h3>Create Custom Glossary</h3>
+          <p>Start from scratch. Name your glossary, pick a language pair, and add terms one by one.</p>
         </div>
       </div>
     </div>
 
-    <!-- PROFILE SCREEN -->
-    <div id="screen-profile" class="screen">
-      <div class="screen-title">Profile</div>
-      <div class="profile-header">
-        <div class="profile-avatar">A</div>
-        <div>
-          <div class="profile-name">Alex</div>
-          <div class="profile-sub">ES ↔ EN · Court Interpreter</div>
-        </div>
-      </div>
-      <div class="section-header">Settings</div>
-      <div class="settings-row">
-        <div class="settings-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-        </div>
-        <div class="settings-text">
-          <div class="settings-title">Language Pair</div>
-          <div class="settings-sub">Spanish ↔ English</div>
-        </div>
-        <span class="list-chevron" style="color:var(--gray-200); font-size:18px;">›</span>
-      </div>
-      <div class="settings-row">
-        <div class="settings-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-        </div>
-        <div class="settings-text">
-          <div class="settings-title">Import / Export</div>
-          <div class="settings-sub">CSV, JSON, Anki decks</div>
-        </div>
-        <span class="list-chevron" style="color:var(--gray-200); font-size:18px;">›</span>
-      </div>
-      <div class="settings-row">
-        <div class="settings-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        </div>
-        <div class="settings-text">
-          <div class="settings-title">Statistics</div>
-          <div class="settings-sub">248 terms · 12 sessions</div>
-        </div>
-        <span class="list-chevron" style="color:var(--gray-200); font-size:18px;">›</span>
-      </div>
-      <div class="settings-row">
-        <div class="settings-icon" style="background: #FFEBEE;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        </div>
-        <div class="settings-text">
-          <div class="settings-title" style="color:#E53935;">Sign Out</div>
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- TAB BAR -->
-  <div class="tab-bar">
-    <button class="tab-item active" onclick="switchTab('glossary', this)">
+  <!-- TAB BAR: 3 tabs with AI as bigger center button -->
+  <div class="tab-bar" style="padding:12px 20px 28px;position:relative;">
+    <button class="tab-item active" onclick="switchTab('home', this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1a1 1 0 00.7-1.7l-9-9a1 1 0 00-1.4 0l-9 9A1 1 0 003 13zm5 7v-6h8v6H8z"/></svg>
+      <span class="tab-label">Home</span>
+    </button>
+
+    <button onclick="switchTab('aiprep', this)" id="aiBigBtn" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-600));border:4px solid white;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,102,255,.35);margin-top:-24px;padding:0;flex-shrink:0;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+    </button>
+
+    <button class="tab-item" onclick="switchTab('glossary', this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm2 8v2h8v-2H8zm0 4v2h5v-2H8z"/></svg>
       <span class="tab-label">Glossary</span>
-    </button>
-    <button class="tab-item" onclick="switchTab('aiprep', this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
-      <span class="tab-label">AI Prep</span>
-    </button>
-    <button class="tab-item" onclick="switchTab('study', this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v1h2a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2v-1H4a2 2 0 01-2-2V6a2 2 0 012-2zm4 15h10V7H8v12zM6 6v10h0V6z"/></svg>
-      <span class="tab-label">Study</span>
-    </button>
-    <button class="tab-item" onclick="switchTab('profile', this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/></svg>
-      <span class="tab-label">Profile</span>
     </button>
   </div>
 </div>
 
 <script>
 function switchTab(name, el) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = ''; });
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
-  el.classList.add('active');
+  if (el && el.classList.contains('tab-item')) el.classList.add('active');
 }
 
 function showSubScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  // scroll to top
+  document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = ''; });
+  const target = document.getElementById('screen-' + name);
+  target.classList.add('active');
+  if (name === 'aiprep') target.style.display = 'flex';
   document.querySelector('.screen-content').scrollTop = 0;
+}
+
+function pickAIMode(mode, el) {
+  document.querySelectorAll('.ai-mode-chip').forEach(function(c){
+    c.style.background = 'white';
+    c.style.color = 'var(--gray-900)';
+    c.style.borderColor = 'var(--gray-200)';
+  });
+  el.style.background = 'var(--blue-50)';
+  el.style.color = 'var(--blue-500)';
+  el.style.borderColor = 'var(--blue-500)';
+
+  var msgs = document.getElementById('aiChatMessages');
+  var userText = mode === 'glossary' ? 'Create Tailored Glossary' : 'Practice Interpretation';
+  msgs.innerHTML += '<div style="align-self:flex-end;max-width:85%;"><div style="display:flex;gap:8px;align-items:flex-end;flex-direction:row-reverse;"><div style="width:32px;height:32px;border-radius:50%;background:var(--gray-100);color:var(--gray-500);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;">A</div><div style="background:var(--blue-500);color:white;border-radius:16px 16px 4px 16px;padding:12px 16px;font-size:14px;line-height:20px;">' + userText + '</div></div></div>';
+
+  setTimeout(function(){
+    var reply = mode === 'glossary'
+      ? 'Great! Tell me about your upcoming assignment — what field, language pair, and any specific context? I can also blend with your existing glossaries.'
+      : "Perfect! I'll play both parties in a realistic scenario. What setting would you like to practice? (Medical, Legal, Education, etc.)";
+    msgs.innerHTML += '<div style="display:flex;gap:8px;align-items:flex-end;max-width:85%;"><div style="width:32px;height:32px;border-radius:50%;background:var(--blue-100);color:var(--blue-500);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;">AI</div><div style="background:var(--gray-50);border-radius:16px 16px 16px 4px;padding:12px 16px;font-size:14px;line-height:20px;color:var(--gray-900);">' + reply + '</div></div>';
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 600);
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendAIMessage() {
+  var input = document.getElementById('aiInputField');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  var msgs = document.getElementById('aiChatMessages');
+  msgs.innerHTML += '<div style="align-self:flex-end;max-width:85%;"><div style="display:flex;gap:8px;align-items:flex-end;flex-direction:row-reverse;"><div style="width:32px;height:32px;border-radius:50%;background:var(--gray-100);color:var(--gray-500);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;">A</div><div style="background:var(--blue-500);color:white;border-radius:16px 16px 4px 16px;padding:12px 16px;font-size:14px;line-height:20px;">' + text + '</div></div></div>';
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
 function selectGlossChip(el) {
