@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>InterpretAI — Conversational Onboarding</title>
+<title>InterpretAI — Prototype 2</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
   :root {
@@ -39,7 +39,113 @@
   .status-bar .icons { display:flex; gap:6px; align-items:center; }
   .status-bar .icons svg { width:18px; height:18px; }
 
-  /* Chat area */
+  /* View container */
+  .view {
+    flex:1; overflow-y:auto; display:none; flex-direction:column;
+  }
+  .view.active { display:flex; }
+  .view::-webkit-scrollbar { display:none; }
+
+  /* ============ GLOSSARY VIEW ============ */
+  .glossary-view { padding:8px 24px 16px; }
+  .page-title {
+    font-size:34px; font-weight:800; color:var(--gray-900);
+    margin-bottom:18px; letter-spacing:-0.5px;
+  }
+  .search-row { display:flex; gap:10px; margin-bottom:28px; }
+  .search-box {
+    flex:1; background:var(--gray-50); border-radius:12px;
+    display:flex; align-items:center; gap:10px; padding:12px 14px;
+    border:1px solid transparent;
+  }
+  .search-box svg { width:18px; height:18px; color:var(--gray-500); flex-shrink:0; }
+  .search-box input {
+    flex:1; border:none; outline:none; background:transparent;
+    font-size:15px; font-family:inherit; color:var(--gray-900);
+  }
+  .search-box input::placeholder { color:var(--gray-500); }
+  .filter-btn {
+    width:48px; height:46px; border-radius:12px;
+    background:var(--gray-50); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .filter-btn svg { width:20px; height:20px; color:var(--blue-500); }
+
+  .section-title {
+    font-size:22px; font-weight:700; color:var(--gray-900);
+    margin-bottom:14px; letter-spacing:-0.3px;
+  }
+
+  .quick-access-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:10px;
+    margin-bottom:28px;
+  }
+  .quick-card {
+    background:var(--gray-50); border-radius:14px;
+    padding:22px 16px; text-align:center; cursor:pointer;
+    border:none; font-family:inherit; transition:all .2s;
+  }
+  .quick-card:active { transform:scale(.97); }
+  .quick-icon {
+    width:44px; height:44px; border-radius:50%;
+    background:var(--blue-100); margin:0 auto 12px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .quick-icon svg { width:22px; height:22px; color:var(--blue-500); }
+  .quick-label { font-size:15px; font-weight:600; color:var(--gray-900); }
+
+  .glossary-list { display:flex; flex-direction:column; }
+  .glossary-item {
+    display:flex; align-items:center; gap:14px;
+    padding:16px 0; border-bottom:1px solid var(--gray-100);
+    cursor:pointer; transition:all .2s;
+  }
+  .glossary-item:active { background:var(--gray-50); }
+  .glossary-item:last-child { border-bottom:none; }
+  .glossary-icon {
+    width:44px; height:44px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .glossary-icon svg { width:22px; height:22px; }
+  .glossary-icon.medical { background:transparent; }
+  .glossary-icon.medical svg { color:var(--gray-900); }
+  .glossary-icon.legal { background:transparent; }
+  .glossary-icon.legal svg { color:var(--gray-900); }
+  .glossary-icon.education { background:var(--blue-100); }
+  .glossary-icon.education svg { color:var(--blue-500); }
+  .glossary-icon.business { background:var(--green-50); }
+  .glossary-icon.business svg { color:var(--green-500); }
+  .glossary-meta { flex:1; min-width:0; }
+  .glossary-name {
+    font-size:16px; font-weight:700; color:var(--gray-900);
+    line-height:21px; margin-bottom:3px;
+  }
+  .glossary-sub { font-size:13px; color:var(--gray-500); }
+  .glossary-time { font-size:13px; color:var(--gray-500); display:flex; align-items:center; gap:4px; }
+  .glossary-time svg { width:14px; height:14px; }
+
+  /* ============ AI PREP VIEW ============ */
+  .aiprep-view { padding:0; position:relative; }
+  .view.aiprep-view.active { display:flex; flex-direction:column; }
+
+  /* Mode toggle (segmented) */
+  .mode-toggle-wrap { padding:8px 24px 12px; flex-shrink:0; }
+  .mode-toggle {
+    display:flex; background:var(--gray-50); border-radius:12px;
+    padding:4px; position:relative;
+  }
+  .mode-toggle-btn {
+    flex:1; padding:10px 12px; border:none; background:transparent;
+    font-family:inherit; font-size:14px; font-weight:600;
+    color:var(--gray-500); cursor:pointer; border-radius:9px;
+    transition:all .25s; z-index:1;
+  }
+  .mode-toggle-btn.active {
+    background:var(--white); color:var(--blue-500);
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+  }
+
   .chat-area {
     flex:1; overflow-y:auto; padding:16px;
     display:flex; flex-direction:column; gap:8px;
@@ -47,7 +153,6 @@
   }
   .chat-area::-webkit-scrollbar { display:none; }
 
-  /* Messages */
   .msg { max-width:85%; display:flex; flex-direction:column; gap:4px; }
   .msg.ai { align-self:flex-start; }
   .msg.user { align-self:flex-end; }
@@ -71,10 +176,23 @@
   .msg.user .bubble { background:var(--blue-500); color:var(--white); border-radius:16px 16px 4px 16px; }
   .bubble strong { font-weight:600; }
 
-  /* Welcome hero */
-  .welcome-hero {
-    text-align:center; padding:40px 20px 20px;
+  /* Roleplay (interpreter simulation) speaker styling */
+  .msg.ai.roleplay .msg-avatar { background:var(--gray-50); font-size:18px; color:initial; }
+  .speaker-label {
+    font-size:11px; font-weight:600; color:var(--gray-500);
+    margin-bottom:4px; padding-left:4px; letter-spacing:.3px;
+    text-transform:uppercase;
   }
+  .msg.ai.roleplay .bubble.lang-a { border-left:3px solid #C60B1E; }
+  .msg.ai.roleplay .bubble.lang-b { border-left:3px solid #002868; }
+  .turn-hint {
+    align-self:flex-start; padding-left:40px;
+    font-size:12px; font-weight:600; color:var(--blue-500);
+    display:flex; align-items:center; gap:6px; margin-top:-2px;
+  }
+  .turn-hint svg { width:14px; height:14px; }
+
+  .welcome-hero { text-align:center; padding:40px 20px 20px; }
   .welcome-logo {
     width:72px; height:72px; border-radius:20px;
     background:linear-gradient(135deg, var(--blue-500), var(--blue-600));
@@ -85,7 +203,203 @@
   .welcome-title { font-size:28px; font-weight:700; color:var(--gray-900); margin-bottom:6px; }
   .welcome-sub { font-size:15px; color:var(--gray-500); line-height:22px; }
 
-  /* Inline option chips for chat */
+  /* Suggestion chips (above input) */
+  .prompt-chips {
+    display:flex; gap:8px; padding:8px 16px;
+    overflow-x:auto; flex-shrink:0;
+    scrollbar-width:none;
+  }
+  .prompt-chips::-webkit-scrollbar { display:none; }
+  .prompt-chip {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 16px; border-radius:999px;
+    background:var(--white); border:1.5px solid var(--gray-200);
+    color:var(--gray-900); font-size:13px; font-weight:500;
+    cursor:pointer; font-family:inherit; white-space:nowrap;
+    transition:all .15s; flex-shrink:0;
+  }
+  .prompt-chip:hover { border-color:var(--blue-500); background:var(--blue-50); }
+  .prompt-chip:active { transform:scale(.97); }
+  .prompt-chip svg { width:16px; height:16px; color:var(--gray-500); }
+
+  /* Bottom input bar */
+  .input-bar {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 16px 12px; flex-shrink:0;
+    background:var(--white);
+    border-top:1px solid var(--gray-100);
+  }
+  .input-field {
+    flex:1; display:flex; align-items:center;
+    background:var(--gray-50); border-radius:22px;
+    padding:8px 14px; gap:8px;
+    border:1.5px solid transparent; transition:border-color .2s;
+  }
+  .input-field:focus-within { border-color:var(--blue-500); }
+  .input-field input {
+    flex:1; border:none; outline:none; background:transparent;
+    font-family:inherit; font-size:15px; color:var(--gray-900);
+    padding:6px 0;
+  }
+  .input-field input::placeholder { color:var(--gray-500); }
+  .input-icon-btn {
+    width:36px; height:36px; border-radius:50%;
+    border:none; background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .15s; flex-shrink:0;
+  }
+  .input-icon-btn:active { transform:scale(.9); }
+  .input-icon-btn svg { width:20px; height:20px; color:var(--gray-500); }
+  .send-btn {
+    background:var(--blue-500);
+  }
+  .send-btn svg { color:var(--white); }
+  .send-btn:active { background:var(--blue-600); }
+  .mic-btn.recording { background:var(--red-500); }
+  .mic-btn.recording svg { color:var(--white); }
+
+  /* In-chat term picker */
+  .term-pick-row {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 0; border-bottom:1px solid var(--gray-100);
+    cursor:pointer; transition:opacity .15s;
+  }
+  .term-pick-row:last-child { border-bottom:none; }
+  .term-pick-row.unchecked .term-en, .term-pick-row.unchecked .term-es { opacity:.4; }
+  .term-pick-checkbox {
+    width:24px; height:24px; border-radius:6px;
+    border:1.5px solid var(--gray-200); background:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; transition:all .15s;
+  }
+  .term-pick-checkbox svg { width:14px; height:14px; color:var(--white); display:none; }
+  .term-pick-checkbox.checked { background:var(--blue-500); border-color:var(--blue-500); }
+  .term-pick-checkbox.checked svg { display:block; }
+  .term-pick-actions {
+    padding:14px 16px; border-top:1px solid var(--gray-100);
+  }
+  .term-pick-actions .save-all-btn { width:100%; }
+
+  /* Create glossary panel (overlays chat area) */
+  .create-panel {
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    background:var(--white); display:none;
+    z-index:5;
+    flex-direction:column;
+  }
+  .create-panel.active {
+    display:flex;
+    animation:slideUp .3s ease;
+  }
+  @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+
+  .create-header {
+    display:flex; align-items:center; gap:12px;
+    padding:14px 16px; border-bottom:1px solid var(--gray-100);
+    flex-shrink:0;
+  }
+  .create-back {
+    width:36px; height:36px; border-radius:50%; border:none;
+    background:var(--gray-50); cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .create-back svg { width:18px; height:18px; color:var(--gray-900); }
+  .create-title { font-size:18px; font-weight:700; color:var(--gray-900); }
+
+  .create-body { flex:1; overflow-y:auto; padding:18px 20px; }
+  .create-body::-webkit-scrollbar { display:none; }
+
+  .field-label {
+    font-size:12px; font-weight:600; color:var(--gray-500);
+    margin-bottom:6px; text-transform:uppercase; letter-spacing:.6px;
+  }
+  .name-input {
+    width:100%; padding:14px 16px; border-radius:12px;
+    background:var(--gray-50); border:1.5px solid transparent;
+    font-family:inherit; font-size:17px; font-weight:600;
+    color:var(--gray-900); outline:none; margin-bottom:24px;
+  }
+  .name-input:focus { border-color:var(--blue-500); background:var(--white); }
+
+  .terms-section-title {
+    font-size:15px; font-weight:700; color:var(--gray-900);
+    margin-bottom:10px; display:flex; justify-content:space-between; align-items:baseline;
+  }
+  .terms-count { font-size:13px; color:var(--gray-500); font-weight:500; }
+
+  .create-term-row {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 14px; background:var(--gray-50); border-radius:12px;
+    margin-bottom:8px;
+  }
+  .create-term-texts { flex:1; min-width:0; }
+  .create-term-en { font-size:15px; font-weight:600; color:var(--gray-900); }
+  .create-term-es { font-size:13px; color:var(--blue-500); margin-top:2px; }
+  .create-term-delete {
+    width:32px; height:32px; border-radius:50%; border:none;
+    background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .15s;
+  }
+  .create-term-delete:hover { background:var(--red-100); }
+  .create-term-delete svg { width:18px; height:18px; color:var(--red-500); }
+
+  .add-term-toggle {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:14px; background:transparent;
+    border:1.5px dashed var(--gray-200); border-radius:12px;
+    width:100%; cursor:pointer; font-family:inherit;
+    font-size:14px; font-weight:600; color:var(--blue-500);
+    margin-top:6px;
+  }
+  .add-term-toggle:hover { background:var(--blue-50); border-color:var(--blue-500); }
+  .add-term-toggle svg { width:18px; height:18px; }
+
+  .add-term-form {
+    display:none; flex-direction:column; gap:8px;
+    padding:14px; background:var(--blue-50); border-radius:12px;
+    margin-top:6px;
+  }
+  .add-term-form.active { display:flex; }
+  .add-term-input {
+    width:100%; padding:10px 12px; border-radius:8px;
+    border:1.5px solid var(--gray-200); background:var(--white);
+    font-family:inherit; font-size:14px; outline:none;
+  }
+  .add-term-input:focus { border-color:var(--blue-500); }
+  .add-term-buttons { display:flex; gap:8px; justify-content:flex-end; }
+  .add-term-cancel, .add-term-add {
+    padding:9px 18px; border-radius:8px; border:none;
+    font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .add-term-cancel { background:var(--gray-100); color:var(--gray-900); }
+  .add-term-add { background:var(--blue-500); color:var(--white); }
+
+  .create-footer {
+    padding:12px 16px 16px; border-top:1px solid var(--gray-100);
+    flex-shrink:0;
+  }
+  .create-save-btn {
+    width:100%; padding:14px; border-radius:12px; border:none;
+    background:var(--blue-500); color:var(--white);
+    font-family:inherit; font-size:15px; font-weight:700; cursor:pointer;
+    transition:background .15s;
+  }
+  .create-save-btn:active { background:var(--blue-600); }
+  .create-save-btn:disabled { background:var(--gray-200); color:var(--gray-500); cursor:not-allowed; }
+
+  /* Toast */
+  .toast {
+    position:absolute; bottom:96px; left:50%;
+    transform:translateX(-50%);
+    background:var(--gray-900); color:var(--white);
+    padding:10px 18px; border-radius:24px;
+    font-size:14px; font-weight:500; z-index:50;
+    animation:toastIn .25s, toastOut .3s 1.7s forwards;
+  }
+  @keyframes toastIn { from { opacity:0; transform:translate(-50%,10px); } to { opacity:1; transform:translate(-50%,0); } }
+  @keyframes toastOut { to { opacity:0; transform:translate(-50%,-10px); } }
+
   .chat-options {
     display:flex; flex-wrap:wrap; gap:8px; max-width:85%;
     align-self:flex-start; padding-left:40px;
@@ -102,11 +416,8 @@
     background:var(--blue-500); color:var(--white); border-color:var(--blue-500);
     pointer-events:none;
   }
-  .chat-option.disabled {
-    opacity:.4; pointer-events:none;
-  }
+  .chat-option.disabled { opacity:.4; pointer-events:none; }
 
-  /* Inline language grid */
   .lang-grid {
     display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;
     max-width:85%; align-self:flex-start; padding-left:40px;
@@ -127,7 +438,6 @@
   }
   .lang-option.disabled { opacity:.4; pointer-events:none; }
 
-  /* Detail text area inside chat */
   .chat-textarea-wrap {
     max-width:100%; width:100%; align-self:stretch;
     display:flex; flex-direction:column; gap:8px;
@@ -148,7 +458,6 @@
   }
   .chat-textarea-send:active { background:var(--blue-600); transform:scale(.97); }
 
-  /* Typing indicator */
   .typing { display:flex; gap:8px; align-items:flex-end; align-self:flex-start; }
   .typing-dots {
     background:var(--gray-50); border-radius:16px 16px 16px 4px;
@@ -162,7 +471,6 @@
   .typing-dots span:nth-child(3) { animation-delay:.4s; }
   @keyframes bounce { to { opacity:.3; transform:translateY(-4px); } }
 
-  /* Term results card */
   .term-card {
     background:var(--white); border-radius:16px; overflow:hidden;
     max-width:100%; width:100%; align-self:stretch;
@@ -223,17 +531,124 @@
   .save-all-btn.secondary { background:var(--gray-50); color:var(--gray-900); border:1px solid var(--gray-200); }
   .save-all-btn.saved { background:var(--green-500); color:var(--white); }
 
-  /* Progress dots at top */
-  .progress-dots {
-    display:flex; justify-content:center; gap:6px;
-    padding:8px 0 4px; flex-shrink:0;
+  /* ============ STUDY VIEW ============ */
+  .study-view { padding:8px 24px 0; }
+  .view.study-view.active { display:flex; flex-direction:column; }
+  .study-header-row {
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:12px;
   }
-  .pdot {
-    width:8px; height:8px; border-radius:50%;
-    background:var(--gray-200); transition:all .3s;
+  .study-header-row .page-title { margin-bottom:0; }
+  .due-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--green-50); color:var(--green-500);
+    padding:6px 12px; border-radius:999px;
+    font-size:13px; font-weight:600;
   }
-  .pdot.active { background:var(--blue-500); width:24px; border-radius:4px; }
-  .pdot.done { background:var(--green-500); }
+  .due-dot { width:8px; height:8px; border-radius:50%; background:var(--green-500); }
+
+  .progress-tracker {
+    background:var(--gray-50); border-radius:14px;
+    padding:14px 18px; margin-bottom:18px;
+    display:flex; justify-content:space-around; align-items:center;
+  }
+  .pt-stat { text-align:center; }
+  .pt-num { font-size:24px; font-weight:800; line-height:1.1; }
+  .pt-num.blue { color:var(--blue-500); }
+  .pt-num.green { color:var(--green-500); }
+  .pt-num.dark { color:var(--gray-900); }
+  .pt-label { font-size:12px; color:var(--gray-500); margin-top:2px; }
+
+  .flashcard {
+    width:100%; min-height:240px;
+    border:1.5px solid var(--gray-200); border-radius:18px;
+    padding:32px 22px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; cursor:pointer; background:var(--white);
+    transition:all .2s;
+  }
+  .flashcard:active { transform:scale(.99); }
+  .flashcard-lang {
+    font-size:13px; font-weight:600; color:var(--gray-500);
+    letter-spacing:1px; margin-bottom:16px;
+  }
+  .flashcard-term {
+    font-size:38px; font-weight:800; color:var(--gray-900);
+    margin-bottom:18px; letter-spacing:-0.5px;
+  }
+  .flashcard-action {
+    font-size:16px; color:var(--blue-500); font-weight:600;
+  }
+  .flashcard-answer {
+    font-size:24px; font-weight:600; color:var(--blue-500);
+    margin-bottom:6px;
+  }
+
+  .study-spacer { flex:1; min-height:20px; }
+
+  .rating-row {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    padding:0 4px 16px;
+    gap:8px;
+  }
+  .rating-btn {
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+    background:transparent; border:none; cursor:pointer;
+    font-family:inherit; padding:0;
+  }
+  .rating-circle {
+    width:64px; height:64px; border-radius:50%;
+    border:2.5px solid; display:flex; align-items:center; justify-content:center;
+    transition:transform .15s;
+  }
+  .rating-btn:active .rating-circle { transform:scale(.92); }
+  .rating-circle svg { width:30px; height:30px; }
+  .rating-label { font-size:14px; font-weight:600; color:var(--gray-900); }
+  .rating-btn.again .rating-circle { border-color:var(--red-500); color:var(--red-500); }
+  .rating-btn.hard .rating-circle { border-color:var(--gold-500); color:var(--gold-500); }
+  .rating-btn.good .rating-circle { border-color:var(--green-500); color:var(--green-500); }
+  .rating-btn.easy .rating-circle { border-color:var(--gray-200); color:var(--blue-500); }
+
+  /* ============ PROFILE VIEW ============ */
+  .profile-view { padding:8px 24px 16px; }
+  .profile-card {
+    background:var(--gray-50); border-radius:14px;
+    padding:18px; display:flex; align-items:center; gap:14px;
+    margin-bottom:28px;
+  }
+  .profile-avatar {
+    width:60px; height:60px; border-radius:50%;
+    background:var(--blue-100); color:var(--blue-500);
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; font-weight:700;
+    flex-shrink:0;
+  }
+  .profile-name { font-size:22px; font-weight:700; color:var(--gray-900); margin-bottom:2px; }
+  .profile-meta { font-size:14px; color:var(--gray-500); }
+
+  .settings-list {
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .setting-row {
+    background:var(--gray-50); border-radius:14px;
+    padding:14px 16px; display:flex; align-items:center; gap:14px;
+    cursor:pointer; border:none; font-family:inherit; width:100%;
+    transition:all .2s;
+  }
+  .setting-row:active { transform:scale(.99); background:var(--gray-100); }
+  .setting-icon {
+    width:40px; height:40px; border-radius:10px;
+    background:var(--blue-100); display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .setting-icon svg { width:20px; height:20px; color:var(--blue-500); }
+  .setting-icon.danger { background:var(--red-100); }
+  .setting-icon.danger svg { color:var(--red-500); }
+  .setting-text { flex:1; text-align:left; }
+  .setting-title { font-size:16px; font-weight:700; color:var(--gray-900); }
+  .setting-title.danger { color:var(--red-500); }
+  .setting-sub { font-size:13px; color:var(--gray-500); margin-top:2px; }
+  .setting-chevron svg { width:16px; height:16px; color:var(--gray-500); }
 
   /* Tab bar */
   .tab-bar {
@@ -273,44 +688,312 @@
     </div>
   </div>
 
-  <!-- Progress dots -->
-  <div class="progress-dots" id="progressDots">
-    <div class="pdot active" id="pdot0"></div>
-    <div class="pdot" id="pdot1"></div>
-    <div class="pdot" id="pdot2"></div>
-    <div class="pdot" id="pdot3"></div>
-    <div class="pdot" id="pdot4"></div>
-  </div>
-
-  <!-- Chat area -->
-  <div class="chat-area" id="chatArea">
-
-    <!-- Welcome hero -->
-    <div class="welcome-hero fade-in" id="welcomeHero">
-      <div class="welcome-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+  <!-- ========== GLOSSARY VIEW ========== -->
+  <div class="view glossary-view" id="view-glossary">
+    <h1 class="page-title">Glossary</h1>
+    <div class="search-row">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search glossaries...">
       </div>
-      <div class="welcome-title">InterpretAI</div>
-      <div class="welcome-sub">Let's set up your prep session.<br>I'll walk you through it — just a few quick questions.</div>
+      <button class="filter-btn" aria-label="Filter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      </button>
     </div>
 
+    <h2 class="section-title">Quick Access</h2>
+    <div class="quick-access-grid">
+      <button class="quick-card">
+        <div class="quick-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="quick-label">Add a Term</div>
+      </button>
+      <button class="quick-card">
+        <div class="quick-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        </div>
+        <div class="quick-label">Create New Glossary</div>
+      </button>
+    </div>
+
+    <h2 class="section-title">My Glossaries</h2>
+    <div class="glossary-list">
+      <div class="glossary-item">
+        <div class="glossary-icon medical">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="glossary-meta">
+          <div class="glossary-name">Medical — Orthopedic</div>
+          <div class="glossary-sub">42 terms · ES ↔ EN</div>
+        </div>
+        <div class="glossary-time">2h ago
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-icon legal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <div class="glossary-meta">
+          <div class="glossary-name">Legal — Court Proceedings</div>
+          <div class="glossary-sub">28 terms · ES ↔ EN</div>
+        </div>
+        <div class="glossary-time">Yesterday
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-icon education">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <div class="glossary-meta">
+          <div class="glossary-name">Education — IEP Meeting</div>
+          <div class="glossary-sub">35 terms · ES ↔ EN</div>
+        </div>
+        <div class="glossary-time">3 days ago
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-icon business">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        </div>
+        <div class="glossary-meta">
+          <div class="glossary-name">Business — Negotiation</div>
+          <div class="glossary-sub">20 terms · ES ↔ EN</div>
+        </div>
+        <div class="glossary-time">1 week ago
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== AI PREP VIEW ========== -->
+  <div class="view aiprep-view" id="view-aiprep">
+    <div class="mode-toggle-wrap">
+      <div class="mode-toggle">
+        <button class="mode-toggle-btn active" id="modeInterpreter" onclick="setMode('interpreter')">Interpreter</button>
+        <button class="mode-toggle-btn" id="modeGlossary" onclick="setMode('glossary')">Glossary</button>
+      </div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+      <div class="welcome-hero fade-in" id="welcomeHero">
+        <div class="welcome-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+        </div>
+        <div class="welcome-title" id="welcomeTitle">InterpretAI</div>
+        <div class="welcome-sub" id="welcomeSub">Ask me anything to prep for your assignment, or pick a starter below.</div>
+      </div>
+    </div>
+
+    <div class="prompt-chips" id="promptChips">
+      <button class="prompt-chip" onclick="usePrompt('Practice a courtroom dialogue with me')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Practice dialogue
+      </button>
+      <button class="prompt-chip" onclick="usePrompt('Define a medical term for me')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        Define a term
+      </button>
+      <button class="prompt-chip" onclick="usePrompt('Quiz me on legal vocabulary')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Quiz me
+      </button>
+      <button class="prompt-chip" onclick="usePrompt('Translate this phrase')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        Translate
+      </button>
+    </div>
+
+    <div class="input-bar">
+      <div class="input-field">
+        <input type="text" id="chatInput" placeholder="Message InterpretAI..." onkeydown="if(event.key==='Enter') sendMessage()">
+      </div>
+      <button class="input-icon-btn mic-btn" id="micBtn" onclick="toggleMic()" aria-label="Voice record">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button class="input-icon-btn send-btn" onclick="sendMessage()" aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+    <!-- Create Glossary panel (overlays chat when active) -->
+    <div class="create-panel" id="createPanel">
+      <div class="create-header">
+        <button class="create-back" onclick="closeCreatePanel()" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="create-title">Create Glossary</div>
+      </div>
+      <div class="create-body">
+        <div class="field-label">Glossary Name</div>
+        <input class="name-input" id="glossaryName" placeholder="e.g., Legal — Custody Hearing">
+
+        <div class="terms-section-title">
+          <span>Terms</span>
+          <span class="terms-count" id="termsCount">0 terms</span>
+        </div>
+        <div id="workingTermsList"></div>
+
+        <button class="add-term-toggle" onclick="showAddTermForm()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add a Term
+        </button>
+        <div class="add-term-form" id="addTermForm">
+          <input class="add-term-input" id="addTermEn" placeholder="Term (English)">
+          <input class="add-term-input" id="addTermEs" placeholder="Translation (Spanish)">
+          <div class="add-term-buttons">
+            <button class="add-term-cancel" onclick="hideAddTermForm()">Cancel</button>
+            <button class="add-term-add" onclick="addNewTerm()">Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="create-footer">
+        <button class="create-save-btn" onclick="saveGlossary()">Save Glossary</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== STUDY VIEW ========== -->
+  <div class="view study-view" id="view-study">
+    <div class="study-header-row">
+      <h1 class="page-title">Study</h1>
+      <span class="due-pill"><span class="due-dot"></span>12 due</span>
+    </div>
+
+    <div class="progress-tracker">
+      <div class="pt-stat">
+        <div class="pt-num blue" id="ptReviewed">8</div>
+        <div class="pt-label">Reviewed</div>
+      </div>
+      <div class="pt-stat">
+        <div class="pt-num green" id="ptCorrect">6</div>
+        <div class="pt-label">Correct</div>
+      </div>
+      <div class="pt-stat">
+        <div class="pt-num dark" id="ptAccuracy">75%</div>
+        <div class="pt-label">Accuracy</div>
+      </div>
+    </div>
+
+    <div class="flashcard" id="flashcard" onclick="revealCard()">
+      <div class="flashcard-lang">SPANISH → ENGLISH</div>
+      <div class="flashcard-term" id="cardTerm">Demandante</div>
+      <div class="flashcard-action" id="cardAction">Tap to reveal</div>
+    </div>
+
+    <div class="study-spacer"></div>
+
+    <div class="rating-row">
+      <button class="rating-btn again" onclick="rateCard('again')">
+        <div class="rating-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+        </div>
+        <span class="rating-label">Again</span>
+      </button>
+      <button class="rating-btn hard" onclick="rateCard('hard')">
+        <div class="rating-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+        </div>
+        <span class="rating-label">Hard</span>
+      </button>
+      <button class="rating-btn good" onclick="rateCard('good')">
+        <div class="rating-circle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span class="rating-label">Good</span>
+      </button>
+      <button class="rating-btn easy" onclick="rateCard('easy')">
+        <div class="rating-circle">
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="0.5" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <span class="rating-label">Easy</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== PROFILE VIEW ========== -->
+  <div class="view profile-view" id="view-profile">
+    <h1 class="page-title">Profile</h1>
+
+    <div class="profile-card">
+      <div class="profile-avatar">A</div>
+      <div>
+        <div class="profile-name">Alex</div>
+        <div class="profile-meta">ES ↔ EN · Court Interpreter</div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Settings</h2>
+    <div class="settings-list">
+      <button class="setting-row">
+        <div class="setting-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        </div>
+        <div class="setting-text">
+          <div class="setting-title">Language Pair</div>
+          <div class="setting-sub">Spanish ↔ English</div>
+        </div>
+        <div class="setting-chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <button class="setting-row">
+        <div class="setting-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="setting-text">
+          <div class="setting-title">Import / Export</div>
+          <div class="setting-sub">CSV, JSON, Anki decks</div>
+        </div>
+        <div class="setting-chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <button class="setting-row">
+        <div class="setting-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>
+        </div>
+        <div class="setting-text">
+          <div class="setting-title">Statistics</div>
+          <div class="setting-sub">248 terms · 12 sessions</div>
+        </div>
+        <div class="setting-chevron">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </button>
+
+      <button class="setting-row">
+        <div class="setting-icon danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+        <div class="setting-text">
+          <div class="setting-title danger">Sign Out</div>
+        </div>
+      </button>
+    </div>
   </div>
 
   <!-- Tab bar -->
   <div class="tab-bar">
-    <button class="tab-item" onclick="location.href='preview-tabbar.html'">
+    <button class="tab-item active" data-tab="glossary" onclick="switchTab('glossary')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H6zm0 2h7v5h5v11H6V4zm2 8v2h8v-2H8zm0 4v2h5v-2H8z"/></svg>
       <span class="tab-label">Glossary</span>
     </button>
-    <button class="tab-item active">
+    <button class="tab-item" data-tab="aiprep" onclick="switchTab('aiprep')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
       <span class="tab-label">AI Prep</span>
     </button>
-    <button class="tab-item">
+    <button class="tab-item" data-tab="study" onclick="switchTab('study')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v1h2a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2v-1H4a2 2 0 01-2-2V6a2 2 0 012-2zm4 15h10V7H8v12zM6 6v10h0V6z"/></svg>
       <span class="tab-label">Study</span>
     </button>
-    <button class="tab-item">
+    <button class="tab-item" data-tab="profile" onclick="switchTab('profile')">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v2h20v-2c0-3.3-6.7-5-10-5z"/></svg>
       <span class="tab-label">Profile</span>
     </button>
@@ -318,193 +1001,527 @@
 </div>
 
 <script>
-const chat = document.getElementById('chatArea');
-let step = 0;
-let selections = { lang: '', field: '', setting: '', details: '' };
+/* ============ TAB SWITCHING ============ */
+function switchTab(tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  document.querySelector('.tab-item[data-tab="' + tab + '"]').classList.add('active');
+  if (tab === 'aiprep' && currentMode === 'interpreter' && interpreterStep === null) {
+    setTimeout(() => startInterpreterFlow(), 500);
+  }
+}
+// default tab
+document.getElementById('view-glossary').classList.add('active');
 
-const sampleTerms = {
-  Medical: [
-    ['Knee replacement','Reemplazo de rodilla'],['Prosthesis','Prótesis'],
-    ['Range of motion','Rango de movimiento'],['Physical therapy','Fisioterapia'],
-    ['Blood thinner','Anticoagulante'],['Incision','Incisión'],
-    ['Swelling','Hinchazón'],['Follow-up','Cita de seguimiento'],
-    ['Inflammation','Inflamación'],['Sutures','Suturas']
+/* ============ STUDY ============ */
+const studyDeck = [
+  ['Demandante','Plaintiff'],
+  ['Demandado','Defendant'],
+  ['Testimonio','Testimony'],
+  ['Veredicto','Verdict'],
+  ['Fianza','Bail'],
+  ['Custodia','Custody']
+];
+let studyIdx = 0;
+let studyRevealed = false;
+let reviewed = 8, correct = 6;
+
+function revealCard() {
+  if (studyRevealed) return;
+  studyRevealed = true;
+  const term = studyDeck[studyIdx];
+  document.getElementById('cardTerm').textContent = term[1];
+  document.getElementById('cardAction').textContent = term[0];
+  document.getElementById('cardAction').style.color = 'var(--gray-500)';
+  document.getElementById('cardAction').style.fontSize = '15px';
+}
+
+function rateCard(rating) {
+  reviewed += 1;
+  if (rating === 'good' || rating === 'easy') correct += 1;
+  document.getElementById('ptReviewed').textContent = reviewed;
+  document.getElementById('ptCorrect').textContent = correct;
+  document.getElementById('ptAccuracy').textContent = Math.round(correct / reviewed * 100) + '%';
+
+  studyIdx = (studyIdx + 1) % studyDeck.length;
+  studyRevealed = false;
+  const next = studyDeck[studyIdx];
+  document.getElementById('cardTerm').textContent = next[0];
+  document.getElementById('cardAction').textContent = 'Tap to reveal';
+  document.getElementById('cardAction').style.color = 'var(--blue-500)';
+  document.getElementById('cardAction').style.fontSize = '16px';
+}
+
+/* ============ AI PREP CHAT ============ */
+const chat = document.getElementById('chatArea');
+let currentMode = 'interpreter';
+
+const modePrompts = {
+  interpreter: [
+    { label: 'Practice dialogue', text: 'Practice a courtroom dialogue with me',
+      svg: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
+    { label: 'Define a term', text: 'Define a medical term for me',
+      svg: '<path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>' },
+    { label: 'Quiz me', text: 'Quiz me on legal vocabulary',
+      svg: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>' },
+    { label: 'Translate', text: 'Translate this phrase',
+      svg: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>' }
   ],
-  Legal: [
-    ['Plaintiff','Demandante'],['Defendant','Demandado'],
-    ['Testimony','Testimonio'],['Evidence','Evidencia'],
-    ['Verdict','Veredicto'],['Bail','Fianza'],
-    ['Custody','Custodia'],['Sentence','Sentencia'],
-    ['Appeal','Apelación'],['Subpoena','Citación']
-  ],
-  Education: [
-    ['IEP','Plan educativo individualizado'],['Accommodation','Adaptación'],
-    ['Assessment','Evaluación'],['Grade level','Nivel de grado'],
-    ['Special education','Educación especial'],['Disability','Discapacidad'],
-    ['Progress report','Informe de progreso'],['Enrollment','Inscripción'],
-    ['Attendance','Asistencia'],['Transcript','Expediente académico']
-  ],
-  'Community Services': [
-    ['Benefits','Beneficios'],['Eligibility','Elegibilidad'],
-    ['Case worker','Trabajador social'],['Housing assistance','Asistencia de vivienda'],
-    ['Application','Solicitud'],['Income verification','Verificación de ingresos'],
-    ['Dependent','Dependiente'],['Referral','Referencia'],
-    ['Shelter','Refugio'],['Counseling','Consejería']
-  ],
-  Business: [
-    ['Revenue','Ingresos'],['Stakeholder','Parte interesada'],
-    ['Merger','Fusión'],['Budget','Presupuesto'],
-    ['Invoice','Factura'],['Contract','Contrato'],
-    ['Deadline','Fecha límite'],['Compliance','Cumplimiento'],
-    ['Negotiation','Negociación'],['Strategy','Estrategia']
+  glossary: [
+    { label: 'Build glossary', text: 'Build a glossary for an upcoming assignment',
+      svg: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
+    { label: 'Add terms', text: 'Add new terms to my Medical glossary',
+      svg: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' },
+    { label: 'Find synonyms', text: 'Find synonyms for a term',
+      svg: '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>' },
+    { label: 'Import list', text: 'Import a term list I have',
+      svg: '<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>' }
   ]
 };
 
-// Start the conversation after a brief pause
-setTimeout(() => startConversation(), 800);
+const interpreterAvatarSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>';
 
-function startConversation() {
-  addAIMessage("Hi there! 👋 I'm your AI prep assistant. Let's get you ready for your next interpreting assignment.");
-  setTimeout(() => {
-    addAIMessage("First — <strong>what's your language pair?</strong>");
-    setTimeout(() => showLanguageOptions(), 400);
-  }, 1000);
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('modeInterpreter').classList.toggle('active', mode === 'interpreter');
+  document.getElementById('modeGlossary').classList.toggle('active', mode === 'glossary');
+  document.getElementById('welcomeTitle').textContent = mode === 'interpreter' ? 'InterpretAI' : 'Glossary Builder';
+  document.getElementById('welcomeSub').textContent = mode === 'interpreter'
+    ? 'Ask me anything to prep for your assignment, or pick a starter below.'
+    : 'I\'ll walk you through building a glossary — just answer a few quick questions.';
+  document.getElementById('chatInput').placeholder = mode === 'interpreter' ? 'Message InterpretAI...' : 'Type your answer...';
+  renderPromptChips();
+
+  // Auto-start guided flow on first entry
+  if (mode === 'glossary' && glossaryStep === null) {
+    setTimeout(() => startGlossaryFlow(), 500);
+  }
+  if (mode === 'interpreter' && interpreterStep === null) {
+    setTimeout(() => startInterpreterFlow(), 500);
+  }
+}
+
+function renderPromptChips() {
+  const chips = document.getElementById('promptChips');
+  chips.innerHTML = modePrompts[currentMode].map(p =>
+    '<button class="prompt-chip" onclick="usePrompt(\'' + p.text.replace(/'/g, "\\'") + '\')">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p.svg + '</svg>' +
+      p.label +
+    '</button>'
+  ).join('');
 }
 
 function addAIMessage(text) {
+  hideWelcome();
   const div = document.createElement('div');
   div.className = 'msg ai fade-in';
-  div.innerHTML = `
-    <div class="msg-row">
-      <div class="msg-avatar">AI</div>
-      <div class="bubble">${text}</div>
-    </div>
-  `;
+  div.innerHTML = '<div class="msg-row"><div class="msg-avatar">' + interpreterAvatarSVG + '</div><div class="bubble">' + text + '</div></div>';
+  div.querySelector('.msg-avatar svg').style.width = '18px';
+  div.querySelector('.msg-avatar svg').style.height = '18px';
   chat.appendChild(div);
   scrollDown();
 }
 
 function addUserMessage(text) {
+  hideWelcome();
   const div = document.createElement('div');
   div.className = 'msg user fade-in';
-  div.innerHTML = `
-    <div class="msg-row">
-      <div class="msg-avatar">U</div>
-      <div class="bubble">${text}</div>
-    </div>
-  `;
+  div.innerHTML = '<div class="msg-row"><div class="msg-avatar">U</div><div class="bubble">' + escapeHtml(text) + '</div></div>';
   chat.appendChild(div);
   scrollDown();
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function hideWelcome() {
+  const w = document.getElementById('welcomeHero');
+  if (w) w.style.display = 'none';
 }
 
 function showTyping() {
   const div = document.createElement('div');
   div.className = 'typing fade-in';
   div.id = 'typingIndicator';
-  div.innerHTML = `
-    <div class="msg-avatar" style="background:var(--blue-100);color:var(--blue-500);font-size:14px;font-weight:600;">AI</div>
-    <div class="typing-dots"><span></span><span></span><span></span></div>
-  `;
+  div.innerHTML = '<div class="msg-avatar" style="background:var(--blue-100);color:var(--blue-500);">' + interpreterAvatarSVG + '</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+  div.querySelector('.msg-avatar svg').style.width = '18px';
+  div.querySelector('.msg-avatar svg').style.height = '18px';
   chat.appendChild(div);
   scrollDown();
 }
+function hideTyping() { const el = document.getElementById('typingIndicator'); if (el) el.remove(); }
+function scrollDown() { setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50); }
 
-function hideTyping() {
-  const el = document.getElementById('typingIndicator');
-  if (el) el.remove();
+function usePrompt(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
 }
 
-function scrollDown() {
-  setTimeout(() => { chat.scrollTop = chat.scrollHeight; }, 50);
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Glossary flow: capture extra details and run extraction
+  if (currentMode === 'glossary' && glossaryStep === 'details') {
+    addUserMessage(text);
+    input.value = '';
+    glossarySelections.details = text;
+    const skipChip = document.getElementById('skipChip');
+    if (skipChip) skipChip.remove();
+    glossaryStep = 'done';
+    runGlossaryExtraction();
+    return;
+  }
+
+  // Interpreter simulation: user submits their interpretation, advance
+  if (currentMode === 'interpreter' && interpreterStep === 'simulation') {
+    addUserMessage(text);
+    input.value = '';
+    advanceSimulation();
+    return;
+  }
+
+  addUserMessage(text);
+  input.value = '';
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    addAIMessage(generateReply(text));
+  }, 900);
 }
 
-function updateProgress(stepNum) {
-  for (let i = 0; i < 5; i++) {
-    const dot = document.getElementById('pdot' + i);
-    dot.className = 'pdot';
-    if (i < stepNum) dot.classList.add('done');
-    else if (i === stepNum) dot.classList.add('active');
+function generateReply(userText) {
+  if (currentMode === 'glossary') {
+    const result = extractTerms(userText);
+    if (result.terms.length > 0) {
+      setTimeout(() => renderTermPicker(userText, result), 250);
+      const matchedNote = result.matched.length > 0
+        ? ' Direct matches: <strong>' + result.matched.map(t => t[0]).join(', ') + '</strong>.'
+        : '';
+      return 'I tokenized your description and pulled <strong>' + result.terms.length + ' ' +
+        result.domain + ' terms</strong>.' + matchedNote +
+        ' Toggle any off, then tap <strong>Create Glossary</strong>.';
+    }
+    return "Tell me about your assignment — field, setting, who's involved. I'll extract relevant terms.";
+  }
+  const lower = userText.toLowerCase();
+  if (lower.includes('quiz')) return "Sure! Quick quiz: how would you interpret <strong>“motion to dismiss”</strong> in Spanish?";
+  if (lower.includes('translate')) return "Send me the phrase and target language, and I'll give you the interpretation plus context.";
+  if (lower.includes('define')) return "Which term would you like defined? Drop the word and the field (medical, legal, etc.).";
+  if (lower.includes('practice') || lower.includes('dialogue')) return "Let's roleplay. I'll be the attorney; you interpret. <strong>Attorney:</strong> “Please state your full name for the record.”";
+  return "Got it. Tell me a bit more — what's the field, language pair, and what would you like to focus on?";
+}
+
+/* ============ NLP TERM EXTRACTION ============ */
+const termDictionary = {
+  legal: {
+    keywords: ['court','courtroom','judge','custody','hearing','trial','lawyer','attorney','plaintiff','defendant','case','legal','testimony','sentence','bail','appeal','verdict','subpoena','deposition','immigration','witness','jury','divorce'],
+    terms: [
+      ['Plaintiff','Demandante'], ['Defendant','Demandado'],
+      ['Custody','Custodia'], ['Hearing','Audiencia'],
+      ['Testimony','Testimonio'], ['Verdict','Veredicto'],
+      ['Bail','Fianza'], ['Sentence','Sentencia'],
+      ['Appeal','Apelación'], ['Subpoena','Citación judicial'],
+      ['Evidence','Evidencia'], ['Witness','Testigo']
+    ]
+  },
+  medical: {
+    keywords: ['hospital','doctor','patient','surgery','knee','appointment','medical','clinic','prescription','diagnosis','therapy','recovery','medication','symptoms','blood','injury','pain','x-ray','procedure'],
+    terms: [
+      ['Diagnosis','Diagnóstico'], ['Prescription','Receta'],
+      ['Surgery','Cirugía'], ['Symptoms','Síntomas'],
+      ['Recovery','Recuperación'], ['Medication','Medicamento'],
+      ['Blood pressure','Presión arterial'], ['Follow-up','Cita de seguimiento'],
+      ['Physical therapy','Fisioterapia'], ['Pain level','Nivel de dolor'],
+      ['Injury','Lesión'], ['Procedure','Procedimiento']
+    ]
+  },
+  education: {
+    keywords: ['school','iep','teacher','meeting','parent','student','grade','classroom','enrollment','assessment','learning','disability','accommodation','tutor','principal'],
+    terms: [
+      ['IEP','Plan Educativo Individualizado'], ['Accommodation','Adaptación'],
+      ['Assessment','Evaluación'], ['Grade level','Nivel de grado'],
+      ['Special education','Educación especial'], ['Disability','Discapacidad'],
+      ['Enrollment','Inscripción'], ['Progress report','Informe de progreso'],
+      ['Parent-teacher conference','Conferencia de padres y maestros'],
+      ['Attendance','Asistencia']
+    ]
+  },
+  business: {
+    keywords: ['negotiation','contract','merger','meeting','client','deal','revenue','budget','invoice','strategy','stakeholder','compliance','partner'],
+    terms: [
+      ['Negotiation','Negociación'], ['Contract','Contrato'],
+      ['Merger','Fusión'], ['Revenue','Ingresos'],
+      ['Budget','Presupuesto'], ['Invoice','Factura'],
+      ['Stakeholder','Parte interesada'], ['Compliance','Cumplimiento'],
+      ['Deadline','Fecha límite'], ['Strategy','Estrategia']
+    ]
+  }
+};
+
+function extractTerms(text) {
+  const tokens = (text.toLowerCase().match(/\b[a-z]+\b/g) || []);
+  const tokenSet = new Set(tokens);
+
+  // Score each domain by keyword hits
+  let bestDomain = null, bestScore = 0;
+  for (const [domain, dict] of Object.entries(termDictionary)) {
+    let score = 0;
+    dict.keywords.forEach(kw => { if (tokenSet.has(kw)) score++; });
+    if (score > bestScore) { bestScore = score; bestDomain = domain; }
+  }
+  if (!bestDomain) return { domain:'general', terms:[], matched:[] };
+
+  const dict = termDictionary[bestDomain];
+  // Direct matches: term whose English word appears in the user tokens
+  const matched = dict.terms.filter(([en]) =>
+    en.toLowerCase().split(/\s+/).every(w => tokenSet.has(w))
+  );
+  // Suggested set: matched first, then fill with rest of domain (dedupe)
+  const seen = new Set(matched.map(t => t[0]));
+  const suggested = dict.terms.filter(t => !seen.has(t[0]));
+  const all = matched.concat(suggested);
+
+  return { domain: bestDomain, terms: all, matched };
+}
+
+/* ============ IN-CHAT TERM PICKER ============ */
+let extractedSet = [];
+let suggestedName = '';
+let lastDomain = 'legal';
+
+function renderTermPicker(userText, result) {
+  extractedSet = result.terms.map(([en, es], i) => ({ en, es, selected: true, idx: i }));
+  lastDomain = result.domain;
+  const domainName = result.domain.charAt(0).toUpperCase() + result.domain.slice(1);
+  // Use a snippet from user text for suggested name
+  const snippet = userText.split(/[.,!?]/)[0].trim().split(/\s+/).slice(0, 4).join(' ');
+  suggestedName = domainName + ' — ' + (snippet ? snippet.charAt(0).toUpperCase() + snippet.slice(1) : 'New Glossary');
+
+  const card = document.createElement('div');
+  card.className = 'term-card fade-in';
+  card.id = 'extractCard';
+  card.innerHTML =
+    '<div class="term-card-header">' +
+      '<div class="term-card-icon">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+      '</div>' +
+      '<div>' +
+        '<div class="term-card-title">' + domainName + ' terms</div>' +
+        '<div class="term-card-sub" id="pickSub">' + extractedSet.length + ' extracted · tap to toggle</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="term-card-body" id="pickBody"></div>' +
+    '<div class="term-pick-actions">' +
+      '<button class="save-all-btn primary" onclick="openCreatePanel()">Create Glossary →</button>' +
+    '</div>';
+  chat.appendChild(card);
+  renderPickRows();
+  scrollDown();
+}
+
+function renderPickRows() {
+  const body = document.getElementById('pickBody');
+  if (!body) return;
+  body.innerHTML = extractedSet.map((t, i) =>
+    '<div class="term-pick-row ' + (t.selected ? '' : 'unchecked') + '" onclick="togglePick(' + i + ')">' +
+      '<div class="term-pick-checkbox ' + (t.selected ? 'checked' : '') + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+      '</div>' +
+      '<div class="term-texts"><div class="term-en">' + t.en + '</div><div class="term-es">' + t.es + '</div></div>' +
+    '</div>'
+  ).join('');
+  const sub = document.getElementById('pickSub');
+  if (sub) {
+    const selCount = extractedSet.filter(t => t.selected).length;
+    sub.textContent = selCount + ' of ' + extractedSet.length + ' selected';
   }
 }
 
-// STEP 1: Language pair
-function showLanguageOptions() {
-  updateProgress(0);
-  const div = document.createElement('div');
-  div.className = 'lang-grid fade-in';
-  div.id = 'langOptions';
-  const langs = [
-    ['🇪🇸','Spanish ↔ English'],
-    ['🇦🇷','Arabic ↔ English'],
-    ['🇺🇦','Ukrainian ↔ English'],
-    ['🇹🇷','Turkish ↔ English'],
-    ['🇫🇷','French ↔ English'],
-    ['🇨🇳','Mandarin ↔ English'],
-    ['🇵🇰','Urdu ↔ English'],
-    ['🇦🇫','Pashto ↔ English']
-  ];
-  div.innerHTML = langs.map(([flag, name]) =>
-    `<button class="lang-option" onclick="selectLang(this, '${name}')">
-      <span class="flag">${flag}</span>${name}
-    </button>`
-  ).join('');
-  chat.appendChild(div);
-  scrollDown();
+function togglePick(i) {
+  extractedSet[i].selected = !extractedSet[i].selected;
+  renderPickRows();
 }
 
-function selectLang(el, lang) {
-  selections.lang = lang;
-  el.classList.add('selected');
-  el.parentElement.querySelectorAll('.lang-option').forEach(o => {
-    if (o !== el) o.classList.add('disabled');
-  });
+/* ============ CREATE GLOSSARY PANEL ============ */
+let workingTerms = [];
 
+function openCreatePanel() {
+  const selected = extractedSet.filter(t => t.selected);
+  if (selected.length === 0) return;
+  workingTerms = selected.map(t => ({ en: t.en, es: t.es }));
+  document.getElementById('glossaryName').value = suggestedName;
+  document.getElementById('createPanel').classList.add('active');
+  renderWorkingTerms();
+}
+
+function closeCreatePanel() {
+  document.getElementById('createPanel').classList.remove('active');
+  hideAddTermForm();
+}
+
+function renderWorkingTerms() {
+  const list = document.getElementById('workingTermsList');
+  list.innerHTML = workingTerms.map((t, i) =>
+    '<div class="create-term-row">' +
+      '<div class="create-term-texts">' +
+        '<div class="create-term-en">' + escapeHtml(t.en) + '</div>' +
+        '<div class="create-term-es">' + escapeHtml(t.es) + '</div>' +
+      '</div>' +
+      '<button class="create-term-delete" onclick="deleteWorkingTerm(' + i + ')" aria-label="Remove">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+      '</button>' +
+    '</div>'
+  ).join('');
+  document.getElementById('termsCount').textContent = workingTerms.length + (workingTerms.length === 1 ? ' term' : ' terms');
+  document.querySelector('.create-save-btn').disabled = workingTerms.length === 0;
+}
+
+function deleteWorkingTerm(i) {
+  workingTerms.splice(i, 1);
+  renderWorkingTerms();
+}
+
+function showAddTermForm() {
+  document.getElementById('addTermForm').classList.add('active');
+  setTimeout(() => document.getElementById('addTermEn').focus(), 50);
+}
+function hideAddTermForm() {
+  document.getElementById('addTermForm').classList.remove('active');
+  document.getElementById('addTermEn').value = '';
+  document.getElementById('addTermEs').value = '';
+}
+function addNewTerm() {
+  const en = document.getElementById('addTermEn').value.trim();
+  const es = document.getElementById('addTermEs').value.trim();
+  if (!en || !es) return;
+  workingTerms.push({ en, es });
+  renderWorkingTerms();
+  hideAddTermForm();
+}
+
+function saveGlossary() {
+  const name = document.getElementById('glossaryName').value.trim() || 'Untitled';
+  const list = document.querySelector('#view-glossary .glossary-list');
+  const item = document.createElement('div');
+  item.className = 'glossary-item fade-in';
+  const iconClass = lastDomain === 'medical' ? 'medical' :
+                    lastDomain === 'legal' ? 'legal' :
+                    lastDomain === 'business' ? 'business' : 'education';
+  const iconSvg = lastDomain === 'medical'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'
+    : lastDomain === 'legal'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
+    : lastDomain === 'business'
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>';
+
+  item.innerHTML =
+    '<div class="glossary-icon ' + iconClass + '">' + iconSvg + '</div>' +
+    '<div class="glossary-meta">' +
+      '<div class="glossary-name">' + escapeHtml(name) + '</div>' +
+      '<div class="glossary-sub">' + workingTerms.length + ' terms · ES ↔ EN</div>' +
+    '</div>' +
+    '<div class="glossary-time">Just now ' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+    '</div>';
+  list.insertBefore(item, list.firstChild);
+
+  closeCreatePanel();
+  showToast('Glossary saved!');
+  switchTab('glossary');
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.querySelector('.phone').appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+let micRecording = false;
+function toggleMic() {
+  micRecording = !micRecording;
+  document.getElementById('micBtn').classList.toggle('recording', micRecording);
+  if (!micRecording) {
+    document.getElementById('chatInput').value = "(voice transcription)";
+  }
+}
+
+/* ============ GLOSSARY GUIDED FLOW ============ */
+let glossaryStep = null;
+let glossarySelections = {};
+
+function startGlossaryFlow() {
+  glossaryStep = 'lang';
+  glossarySelections = {};
+  hideWelcome();
+  addAIMessage("Let's build your glossary. <strong>What's your language pair?</strong>");
+  setTimeout(() => showFlowLangs(), 350);
+}
+
+function showFlowLangs() {
+  const div = document.createElement('div');
+  div.className = 'lang-grid fade-in';
+  const langs = [
+    ['🇪🇸','Spanish ↔ English'], ['🇸🇦','Arabic ↔ English'],
+    ['🇺🇦','Ukrainian ↔ English'], ['🇹🇷','Turkish ↔ English'],
+    ['🇫🇷','French ↔ English'], ['🇨🇳','Mandarin ↔ English'],
+    ['🇵🇰','Urdu ↔ English'], ['🇦🇫','Pashto ↔ English']
+  ];
+  div.innerHTML = langs.map(([flag, name]) =>
+    '<button class="lang-option" onclick="pickLang(this, \'' + name + '\')"><span class="flag">' + flag + '</span>' + name + '</button>'
+  ).join('');
+  chat.appendChild(div); scrollDown();
+}
+
+function pickLang(el, lang) {
+  glossarySelections.lang = lang;
+  glossaryStep = 'field';
+  el.classList.add('selected');
+  el.parentElement.querySelectorAll('.lang-option').forEach(o => { if (o !== el) o.classList.add('disabled'); });
   setTimeout(() => {
     addUserMessage(lang);
     showTyping();
     setTimeout(() => {
       hideTyping();
-      updateProgress(1);
-      addAIMessage(`Great, <strong>${lang}</strong>! Now — <strong>what field is your assignment in?</strong>`);
-      setTimeout(() => showFieldOptions(), 400);
-    }, 1000);
-  }, 300);
+      addAIMessage('Great — <strong>' + lang + '</strong>. Now, <strong>what field is the assignment in?</strong>');
+      setTimeout(() => showFlowFields(), 300);
+    }, 800);
+  }, 250);
 }
 
-// STEP 2: Field
-function showFieldOptions() {
+function showFlowFields() {
   const div = document.createElement('div');
   div.className = 'chat-options fade-in';
-  div.id = 'fieldOptions';
   const fields = ['Medical', 'Legal', 'Education', 'Business', 'Community Services'];
   div.innerHTML = fields.map(f =>
-    `<button class="chat-option" onclick="selectField(this, '${f}')">${f}</button>`
+    '<button class="chat-option" onclick="pickField(this, \'' + f + '\')">' + f + '</button>'
   ).join('');
-  chat.appendChild(div);
-  scrollDown();
+  chat.appendChild(div); scrollDown();
 }
 
-function selectField(el, field) {
-  selections.field = field;
+function pickField(el, field) {
+  glossarySelections.field = field;
+  glossaryStep = 'setting';
   el.classList.add('selected');
-  el.parentElement.querySelectorAll('.chat-option').forEach(o => {
-    if (o !== el) o.classList.add('disabled');
-  });
-
+  el.parentElement.querySelectorAll('.chat-option').forEach(o => { if (o !== el) o.classList.add('disabled'); });
   setTimeout(() => {
     addUserMessage(field);
     showTyping();
     setTimeout(() => {
       hideTyping();
-      updateProgress(2);
-      addAIMessage(`Got it — <strong>${field}</strong>. <strong>What's the specific setting?</strong> For example: hospital clinic, courtroom, school meeting...`);
-      setTimeout(() => showSettingOptions(field), 400);
-    }, 1000);
-  }, 300);
+      addAIMessage('Got it — <strong>' + field + '</strong>. <strong>What\'s the specific setting?</strong>');
+      setTimeout(() => showFlowSettings(field), 300);
+    }, 800);
+  }, 250);
 }
 
-// STEP 3: Setting
-function showSettingOptions(field) {
+function showFlowSettings(field) {
   const settings = {
     Medical: ['Hospital clinic', 'Emergency room', 'Pharmacy', 'Specialist office', 'Telehealth visit'],
     Legal: ['Courtroom', 'Deposition', 'Immigration hearing', 'Attorney meeting', 'Police station'],
@@ -512,165 +1529,281 @@ function showSettingOptions(field) {
     Business: ['Board meeting', 'Negotiation', 'Conference', 'Client call', 'HR meeting'],
     'Community Services': ['Social services office', 'Housing authority', 'Food bank', 'Shelter intake', 'Benefits office']
   };
-
   const div = document.createElement('div');
   div.className = 'chat-options fade-in';
-  div.id = 'settingOptions';
-  div.innerHTML = (settings[field] || settings.Medical).map(s =>
-    `<button class="chat-option" onclick="selectSetting(this, '${s}')">${s}</button>`
+  div.innerHTML = (settings[field] || []).map(s =>
+    '<button class="chat-option" onclick="pickSetting(this, \'' + s.replace(/'/g, "\\'") + '\')">' + s + '</button>'
   ).join('');
-  chat.appendChild(div);
-  scrollDown();
+  chat.appendChild(div); scrollDown();
 }
 
-function selectSetting(el, setting) {
-  selections.setting = setting;
+function pickSetting(el, setting) {
+  glossarySelections.setting = setting;
+  glossaryStep = 'details';
   el.classList.add('selected');
-  el.parentElement.querySelectorAll('.chat-option').forEach(o => {
-    if (o !== el) o.classList.add('disabled');
-  });
-
+  el.parentElement.querySelectorAll('.chat-option').forEach(o => { if (o !== el) o.classList.add('disabled'); });
   setTimeout(() => {
     addUserMessage(setting);
     showTyping();
     setTimeout(() => {
       hideTyping();
-      updateProgress(3);
-      addAIMessage("Almost there! <strong>Any extra details?</strong> The more context, the better your glossary. Or just tap <strong>Skip</strong> to generate now.");
-      setTimeout(() => showDetailsInput(), 400);
-    }, 1000);
-  }, 300);
+      addAIMessage('Almost there! <strong>Any extra details?</strong> Type them below, or tap <strong>Skip</strong> to generate now.');
+      setTimeout(() => showFlowSkip(), 300);
+    }, 800);
+  }, 250);
 }
 
-// STEP 4: Details (optional)
-function showDetailsInput() {
+function showFlowSkip() {
   const div = document.createElement('div');
-  div.className = 'chat-textarea-wrap fade-in';
-  div.id = 'detailsWrap';
-  div.innerHTML = `
-    <textarea class="chat-textarea" id="detailsText" placeholder="e.g., Patient had knee replacement 6 weeks ago, post-op check-up, will discuss recovery and medications..."></textarea>
-    <div style="display:flex;gap:8px;justify-content:flex-end;">
-      <button class="chat-textarea-send" style="background:var(--gray-50);color:var(--gray-900);border:1px solid var(--gray-200);" onclick="skipDetails()">Skip</button>
-      <button class="chat-textarea-send" onclick="submitDetails()">Send</button>
-    </div>
-  `;
+  div.className = 'chat-options fade-in';
+  div.id = 'skipChip';
+  div.innerHTML = '<button class="chat-option" onclick="skipDetails()">Skip — generate now</button>';
+  chat.appendChild(div); scrollDown();
+}
+
+function skipDetails() {
+  const skipChip = document.getElementById('skipChip');
+  if (skipChip) skipChip.remove();
+  addUserMessage('Skip — generate now');
+  glossaryStep = 'done';
+  runGlossaryExtraction();
+}
+
+function runGlossaryExtraction() {
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    const fieldLower = (glossarySelections.field || '').toLowerCase();
+    const forcedDomain = fieldLower.includes('legal') ? 'legal'
+      : fieldLower.includes('medical') ? 'medical'
+      : fieldLower.includes('education') ? 'education'
+      : fieldLower.includes('business') ? 'business'
+      : 'legal';
+    const synthText = (glossarySelections.field || '') + ' ' +
+                      (glossarySelections.setting || '') + ' ' +
+                      (glossarySelections.details || '');
+    const extracted = extractTerms(synthText);
+    const dict = termDictionary[forcedDomain];
+    const terms = (extracted.terms.length > 0 && extracted.domain === forcedDomain)
+      ? extracted.terms : dict.terms.slice();
+    addAIMessage('Here are the terms I extracted for your <strong>' + glossarySelections.field +
+      '</strong> assignment at a <strong>' + glossarySelections.setting +
+      '</strong>. Toggle any off, then tap <strong>Create Glossary</strong>.');
+    setTimeout(() => renderTermPicker(synthText, {
+      domain: forcedDomain, terms, matched: extracted.matched
+    }), 250);
+  }, 1100);
+}
+
+/* ============ INTERPRETER SIMULATION ============ */
+let interpreterStep = null;     // null | 'lang' | 'scenario' | 'simulation' | 'done'
+let interpreterLang = '';       // chosen language pair
+let interpreterScript = null;   // current scenario script
+let interpreterTurnIdx = 0;
+
+const interpreterScripts = {
+  'legal-custody': {
+    title: 'Custody Hearing',
+    parties: {
+      A: { flag: '🇪🇸', name: 'Sra. Ramírez', langLabel: 'Spanish' },
+      B: { flag: '⚖️', name: 'Atty. Smith', langLabel: 'English' }
+    },
+    turns: [
+      { p:'A', text:'Buenos días. Estoy aquí porque mi exesposo no ha cumplido con el acuerdo de custodia. Hace tres semanas que no ve a los niños.' },
+      { p:'B', text:'Thank you for coming in. Could you describe specifically which parts of the agreement have not been honored?' },
+      { p:'A', text:'Él tiene visitas los fines de semana, pero no se ha presentado. Tampoco ha pagado la manutención este mes.' },
+      { p:'B', text:'Do you have documentation of the missed visits and the unpaid child support?' },
+      { p:'A', text:'Sí, tengo mensajes de texto y los recibos del banco. Puedo entregárselos hoy mismo.' },
+      { p:'B', text:"Excellent. Please submit those to the clerk. We'll set a follow-up hearing for next month." }
+    ]
+  },
+  'medical-checkup': {
+    title: 'Doctor Follow-up',
+    parties: {
+      A: { flag: '🇪🇸', name: 'Sr. Vega', langLabel: 'Spanish' },
+      B: { flag: '🩺', name: 'Dr. Patel', langLabel: 'English' }
+    },
+    turns: [
+      { p:'A', text:'Doctor, todavía tengo dolor en la rodilla. Sobre todo cuando subo escaleras o después de caminar mucho.' },
+      { p:'B', text:'I see. On a scale of one to ten, how would you rate the pain right now? Is it sharp or dull?' },
+      { p:'A', text:'Ahora mismo es como un cinco. Es un dolor sordo, pero cuando subo escaleras llega a ocho.' },
+      { p:'B', text:"Let's order an MRI to make sure recovery is on track. Please continue physical therapy twice a week." },
+      { p:'A', text:'Está bien, doctor. ¿Necesito traer algo especial para la resonancia?' },
+      { p:'B', text:'No, just wear comfortable clothing without any metal. The clinic will call you to schedule it within a week.' }
+    ]
+  },
+  'education-iep': {
+    title: 'IEP Meeting',
+    parties: {
+      A: { flag: '🇪🇸', name: 'Sra. López', langLabel: 'Spanish' },
+      B: { flag: '📚', name: 'Ms. Chen', langLabel: 'English' }
+    },
+    turns: [
+      { p:'A', text:'Buenos días. Quería hablar sobre las adaptaciones para mi hijo Diego. ¿Cómo le está yendo este semestre?' },
+      { p:'B', text:'Diego is making real progress in reading. We adjusted his accommodations last month and assessments show improvement.' },
+      { p:'A', text:'Me alegra escuchar eso. ¿Y en matemáticas? El año pasado le costaba mucho.' },
+      { p:'B', text:"He's still working with a tutor twice a week, but his confidence has grown. We'd like to extend that support for one more semester." },
+      { p:'A', text:'¿Necesito firmar algún documento para extender el apoyo del tutor?' },
+      { p:'B', text:"Yes, I'll send the updated IEP home today. Please review and sign it within two weeks." }
+    ]
+  }
+};
+
+function startInterpreterFlow() {
+  interpreterStep = 'lang';
+  hideWelcome();
+  addAIMessage("Let's practice interpretation. I'll roleplay both parties — you serve as the interpreter. <strong>What's your language pair?</strong>");
+  setTimeout(() => showInterpLangs(), 350);
+}
+
+function showInterpLangs() {
+  const div = document.createElement('div');
+  div.className = 'lang-grid fade-in';
+  const langs = [
+    ['🇪🇸','Spanish ↔ English'], ['🇸🇦','Arabic ↔ English'],
+    ['🇺🇦','Ukrainian ↔ English'], ['🇹🇷','Turkish ↔ English'],
+    ['🇫🇷','French ↔ English'], ['🇨🇳','Mandarin ↔ English'],
+    ['🇵🇰','Urdu ↔ English'], ['🇦🇫','Pashto ↔ English']
+  ];
+  div.innerHTML = langs.map(([flag, name]) =>
+    '<button class="lang-option" onclick="pickInterpLang(this, \'' + name + '\')"><span class="flag">' + flag + '</span>' + name + '</button>'
+  ).join('');
+  chat.appendChild(div); scrollDown();
+}
+
+function pickInterpLang(el, lang) {
+  interpreterLang = lang;
+  interpreterStep = 'scenario';
+  el.classList.add('selected');
+  el.parentElement.querySelectorAll('.lang-option').forEach(o => { if (o !== el) o.classList.add('disabled'); });
+  setTimeout(() => {
+    addUserMessage(lang);
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      const note = lang.startsWith('Spanish')
+        ? ''
+        : ' <em>(demo scenarios use Spanish content — practice flow is the same.)</em>';
+      addAIMessage('Great — <strong>' + lang + '</strong>.' + note + ' <strong>Pick a scenario to practice:</strong>');
+      setTimeout(() => showInterpScenarios(), 300);
+    }, 700);
+  }, 250);
+}
+
+function showInterpScenarios() {
+  const div = document.createElement('div');
+  div.className = 'chat-options fade-in';
+  div.innerHTML = Object.entries(interpreterScripts).map(([key, s]) =>
+    '<button class="chat-option" onclick="pickInterpScenario(this, \'' + key + '\')">' + s.title + '</button>'
+  ).join('');
+  chat.appendChild(div); scrollDown();
+}
+
+function pickInterpScenario(el, key) {
+  interpreterScript = interpreterScripts[key];
+  interpreterTurnIdx = 0;
+  interpreterStep = 'simulation';
+  el.classList.add('selected');
+  el.parentElement.querySelectorAll('.chat-option').forEach(o => { if (o !== el) o.classList.add('disabled'); });
+  setTimeout(() => {
+    addUserMessage(interpreterScript.title);
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      const A = interpreterScript.parties.A, B = interpreterScript.parties.B;
+      addAIMessage('Setting the scene: <strong>' + interpreterScript.title +
+        '</strong>. ' + A.flag + ' <strong>' + A.name + '</strong> speaks ' + A.langLabel +
+        '; ' + B.flag + ' <strong>' + B.name + '</strong> speaks ' + B.langLabel +
+        '. After each turn, type your interpretation in the input below.');
+      setTimeout(() => playSimulationTurn(), 800);
+    }, 700);
+  }, 250);
+}
+
+function playSimulationTurn() {
+  if (interpreterTurnIdx >= interpreterScript.turns.length) {
+    return finishSimulation();
+  }
+  const turn = interpreterScript.turns[interpreterTurnIdx];
+  const speaker = interpreterScript.parties[turn.p];
+  const otherKey = turn.p === 'A' ? 'B' : 'A';
+  const otherLang = interpreterScript.parties[otherKey].langLabel;
+
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    addRoleplayMessage(speaker, turn.text, turn.p === 'A' ? 'lang-a' : 'lang-b');
+    addTurnHint('Your turn — interpret to ' + otherLang);
+    document.getElementById('chatInput').placeholder = 'Interpret to ' + otherLang + '...';
+    scrollDown();
+  }, 700);
+}
+
+function advanceSimulation() {
+  // Remove the prior turn hint chip
+  const hint = document.getElementById('turnHint');
+  if (hint) hint.remove();
+  interpreterTurnIdx += 1;
+  playSimulationTurn();
+}
+
+function finishSimulation() {
+  interpreterStep = 'done';
+  document.getElementById('chatInput').placeholder = 'Message InterpretAI...';
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    addAIMessage('Great work! You finished the <strong>' + interpreterScript.title +
+      '</strong> simulation (' + interpreterScript.turns.length + ' turns). Want to try another?');
+    setTimeout(() => showAnotherScenario(), 400);
+  }, 800);
+}
+
+function showAnotherScenario() {
+  const div = document.createElement('div');
+  div.className = 'chat-options fade-in';
+  div.innerHTML = '<button class="chat-option" onclick="restartInterp()">Practice another scenario</button>';
+  chat.appendChild(div); scrollDown();
+}
+
+function restartInterp() {
+  interpreterStep = 'scenario';
+  addUserMessage('Practice another scenario');
+  showTyping();
+  setTimeout(() => {
+    hideTyping();
+    addAIMessage('Pick a scenario:');
+    setTimeout(() => showInterpScenarios(), 250);
+  }, 600);
+}
+
+function addRoleplayMessage(speaker, text, langClass) {
+  hideWelcome();
+  const div = document.createElement('div');
+  div.className = 'msg ai roleplay fade-in';
+  div.innerHTML =
+    '<div class="msg-row">' +
+      '<div class="msg-avatar">' + speaker.flag + '</div>' +
+      '<div>' +
+        '<div class="speaker-label">' + speaker.name + ' · ' + speaker.langLabel + '</div>' +
+        '<div class="bubble ' + langClass + '">' + escapeHtml(text) + '</div>' +
+      '</div>' +
+    '</div>';
   chat.appendChild(div);
   scrollDown();
 }
 
-function skipDetails() {
-  document.getElementById('detailsWrap').classList.add('hidden');
-  addUserMessage("No extra details — generate it!");
-  generateGlossary();
+function addTurnHint(text) {
+  const div = document.createElement('div');
+  div.className = 'turn-hint fade-in';
+  div.id = 'turnHint';
+  div.innerHTML =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>' +
+    text;
+  chat.appendChild(div);
 }
 
-function submitDetails() {
-  const text = document.getElementById('detailsText').value.trim();
-  document.getElementById('detailsWrap').classList.add('hidden');
-  if (text) {
-    selections.details = text;
-    addUserMessage(text);
-  } else {
-    addUserMessage("No extra details — generate it!");
-  }
-  generateGlossary();
-}
-
-function buildTermRows(terms) {
-  var html = '';
-  for (var i = 0; i < terms.length; i++) {
-    html += '<div class="term-row">' +
-      '<div class="term-num">' + (i + 1) + '</div>' +
-      '<div class="term-texts">' +
-        '<div class="term-en">' + terms[i][0] + '</div>' +
-        '<div class="term-es">' + terms[i][1] + '</div>' +
-      '</div>' +
-      '<button class="term-add" onclick="toggleTerm(this)">' +
-        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-      '</button>' +
-    '</div>';
-  }
-  return html;
-}
-
-// STEP 5: Generate glossary
-function generateGlossary() {
-  updateProgress(4);
-  showTyping();
-
-  setTimeout(function() {
-    hideTyping();
-    addAIMessage('Here\'s your personalized <strong>' + selections.field + '</strong> glossary for <strong>' + selections.lang + '</strong> at a <strong>' + selections.setting + '</strong>:');
-
-    setTimeout(function() {
-      var terms = sampleTerms[selections.field] || sampleTerms.Medical;
-      var termCard = document.createElement('div');
-      termCard.className = 'term-card fade-in';
-      termCard.innerHTML =
-        '<div class="term-card-header">' +
-          '<div class="term-card-icon">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' +
-          '</div>' +
-          '<div>' +
-            '<div class="term-card-title">' + selections.field + ' — ' + selections.setting + '</div>' +
-            '<div class="term-card-sub">' + terms.length + ' terms · ' + selections.lang + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<div class="term-card-body">' +
-          buildTermRows(terms) +
-        '</div>' +
-        '<div class="save-all-bar">' +
-          '<button class="save-all-btn secondary" onclick="startOver()">Start Over</button>' +
-          '<button class="save-all-btn primary" id="saveAllBtn" onclick="saveAllTerms()">Save All to Glossary</button>' +
-        '</div>';
-      chat.appendChild(termCard);
-      scrollDown();
-
-      setTimeout(function() {
-        addAIMessage('Tap <strong>+</strong> to save individual terms, or <strong>Save All</strong> to add everything to your glossary. Want to study them right away?');
-        scrollDown();
-      }, 600);
-    }, 500);
-  }, 2000);
-}
-
-function toggleTerm(btn) {
-  if (btn.classList.contains('saved')) {
-    btn.classList.remove('saved');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
-  } else {
-    btn.classList.add('saved');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>';
-  }
-}
-
-function saveAllTerms() {
-  const btn = document.getElementById('saveAllBtn');
-  document.querySelectorAll('.term-add').forEach(t => {
-    if (!t.classList.contains('saved')) toggleTerm(t);
-  });
-  btn.classList.remove('primary');
-  btn.classList.add('saved');
-  btn.innerHTML = '✓ Saved to Glossary!';
-  btn.onclick = null;
-}
-
-function startOver() {
-  // Reset everything
-  chat.innerHTML = `
-    <div class="welcome-hero fade-in" id="welcomeHero">
-      <div class="welcome-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
-      </div>
-      <div class="welcome-title">InterpretAI</div>
-      <div class="welcome-sub">Let's set up your prep session.<br>I'll walk you through it — just a few quick questions.</div>
-    </div>
-  `;
-  step = 0;
-  selections = { lang: '', field: '', setting: '', details: '' };
-  updateProgress(0);
-  setTimeout(() => startConversation(), 800);
-}
+renderPromptChips();
 </script>
 </body>
 </html>
